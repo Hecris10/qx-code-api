@@ -28,12 +28,15 @@ export class UserService {
 
     try {
       // Create the new user
-      return await this.prisma.user.create({
+      const newUser = await this.prisma.user.create({
         data: {
           ...createUserDto,
           password: hashedPassword,
         },
       });
+
+      const { password, ...result } = newUser; // eslint-disable-line @typescript-eslint/no-unused-vars
+      return result;
     } catch (error: any) {
       // Handle other errors
       throw new InternalServerErrorException(
