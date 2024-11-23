@@ -13,7 +13,7 @@ import {
 import { CustomRequest } from '../interfaces/custom-request.interface';
 import { CreateQRCodeDto } from './dto/create-qr-code.dto';
 import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
-import { QRCodeService } from './qr-code.service';
+import { QRCodeService } from './qr-codes.service';
 
 @Controller('qr-codes')
 export class QRCodeController {
