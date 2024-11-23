@@ -19,10 +19,11 @@ model User {
   email       String   @unique
   password    String
   dateOfBirth DateTime
-  country     String
+  phoneNumber String   @unique
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   Auth        Auth[]
+  QRCodes     QRCode[]
 }
 
 model QRCode {
@@ -34,6 +35,8 @@ model QRCode {
   ssid      String? // Optional for WiFi
   password  String? // Optional for WiFi
   link      String? // Optional for links
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Auth {

@@ -1,3 +1,4 @@
+// src/auth/auth.service.ts
 import {
   Injectable,
   InternalServerErrorException,
@@ -5,8 +6,10 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto } from 'src/user/dto/login-user.dto';
+import { validateEmail } from 'src/utilts/validation';
 
 @Injectable()
 export class AuthService {
@@ -26,8 +29,14 @@ export class AuthService {
     return null;
   }
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto, res: Response) {
     try {
+      const isEmailValid = validateEmail(loginUserDto.email);
+
+      if (!isEmailValid) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
       const user = await this.validateUser(
         loginUserDto.email,
         loginUserDto.password,
@@ -39,10 +48,15 @@ export class AuthService {
       const accessToken = this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
       });
-      return {
-        access_token: accessToken,
-      };
+      res.cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+      });
+      return res.send({ message: 'Login successful' });
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       console.error('Error during login:', error);
       throw new InternalServerErrorException('Failed to login');
     }

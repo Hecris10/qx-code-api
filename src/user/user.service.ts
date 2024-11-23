@@ -14,17 +14,26 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    // Check if the user already exists
-    const existingUser = await this.prisma.user.findUnique({
+    // Check if the user already exists in the database by email or phone number
+    const existingEmail = await this.prisma.user.findUnique({
       where: { email: createUserDto.email },
     });
 
-    if (existingUser) {
+    const existingPhoneNumber = await this.prisma.user.findUnique({
+      where: { phoneNumber: createUserDto.phoneNumber },
+    });
+
+    if (existingEmail) {
       throw new ConflictException('User with this email already exists');
+    }
+
+    if (existingPhoneNumber) {
+      throw new ConflictException('User with this phone number already exists');
     }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const phonedTrim = createUserDto.phoneNumber.replace(' ', '').trim();
 
     try {
       // Create the new user
@@ -32,6 +41,7 @@ export class UserService {
         data: {
           ...createUserDto,
           password: hashedPassword,
+          phoneNumber: phonedTrim,
         },
       });
 
