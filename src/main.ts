@@ -5,6 +5,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.setGlobalPrefix('api'); // Set the global prefix
   const port = process.env.PORT || 3001;
   // Enable CORS
   app.enableCors({
