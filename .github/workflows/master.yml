@@ -22,20 +22,25 @@ jobs:
           node-version: '16'
           cache: 'pnpm'
 
-      - name: Install PNPM
-        run: npm install -g pnpm
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Prisma
-        run: pnpm prisma install
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Run tests
+        run: pnpm test
 
       - name: Build project
-        run: pnpm run build
+        run: pnpm build
 
-      - name: Run lint
-        run: pnpm run lint
-
-      # - name: Run tests
-      #   run: pnpm run test
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
