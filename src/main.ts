@@ -6,8 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.setGlobalPrefix('api'); // Set the global prefix
-  const url = process.env.FRONTEND_URL;
-  console.log('FRONTEND_URL', url);
+
   // Enable CORS
   app.enableCors({
     origin: process.env.FRONTEND_URL,
