@@ -10,6 +10,7 @@ import { Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto } from 'src/user/dto/login-user.dto';
 import { validateEmail } from 'src/utilts/validation';
+import { UserAuth } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +21,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(
+    email: string,
+    password: string,
+  ): Promise<UserAuth | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (user && (await bcrypt.compare(password, user.password))) {
       const { password, ...result } = user; // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -44,7 +48,7 @@ export class AuthService {
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      const payload = { email: user.email, sub: user.id };
+      const payload = { ...user, sub: user.id };
       const accessToken = this.jwtService.sign(payload, {
         secret: process.env.JWT_SECRET,
       });
@@ -52,7 +56,10 @@ export class AuthService {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
       });
-      return res.send({ message: 'Login successful' });
+      return res.send({
+        message: 'Login successful',
+        accessToken: `${accessToken}`,
+      });
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;

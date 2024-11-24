@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { QRCodeModule } from './qr-code/qr-code.module';
+import { QRCodeModule } from './qr-codes/qr-codes.module';
 import { UserModule } from './user/user.module';
 @Module({
   imports: [

@@ -32,6 +32,7 @@ export class AuthMiddleware implements NestMiddleware {
       req.user = decoded;
       next();
     } catch (error: any) {
+      console.error('Error verifying token:', error);
       throw new UnauthorizedException(`Invalid token: ${error.message}`);
     }
   }

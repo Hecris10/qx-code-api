@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module';
-import { QRCodeController } from './qr-code.controller';
-import { QRCodeService } from './qr-code.service';
+import { QRCodeController } from './qr-codes.controller';
+import { QRCodeService } from './qr-codes.service';
 
 @Module({
   imports: [PrismaModule],
