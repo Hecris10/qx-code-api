@@ -7,10 +7,13 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { ErrorLogService } from '../services/error-log.service';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  catch(exception: unknown, host: ArgumentsHost) {
+  constructor(private readonly errorLogService: ErrorLogService) {}
+
+  async catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
@@ -19,10 +22,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
+    const { message } = exception;
+    const { user, method, originalUrl } = request;
+    const userId = Number(user && 'id' in user ? user.id : null);
+
+    // Log the error asynchronously
+    this.errorLogService
+      .createErrorLog({
+        statusCode: status,
+        message,
+        userId,
+        path: originalUrl,
+        method,
+      })
+      .catch((err) => console.error('Error logging failed:', err));
 
     response.status(status).json({
       statusCode: status,

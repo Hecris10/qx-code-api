@@ -47,3 +47,13 @@ model Auth {
   expiresAt DateTime
   user      User     @relation(fields: [userId], references: [id])
 }
+
+model ErrorLog {
+  id         Int      @id @default(autoincrement())
+  statusCode Int?
+  message    String?
+  userId     Int?
+  timestamp  DateTime @default(now())
+  path       String?
+  method     String?
+}
