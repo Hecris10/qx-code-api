@@ -33,7 +33,6 @@ export class UserService {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const phonedTrim = createUserDto.phoneNumber.replace(' ', '').trim();
 
     try {
       // Create the new user
@@ -41,7 +40,7 @@ export class UserService {
         data: {
           ...createUserDto,
           password: hashedPassword,
-          phoneNumber: phonedTrim,
+          phoneNumber: createUserDto.phoneNumber,
         },
       });
 

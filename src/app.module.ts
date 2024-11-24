@@ -6,9 +6,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
+import { ErrorLogService } from './common/services/error-log.service';
+
 import { PrismaModule } from './prisma/prisma.module';
+import { PrismaService } from './prisma/prisma.service';
 import { QRCodeModule } from './qr-codes/qr-codes.module';
 import { UserModule } from './user/user.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,7 +28,7 @@ import { UserModule } from './user/user.module';
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ErrorLogService, PrismaService], // Register services
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
