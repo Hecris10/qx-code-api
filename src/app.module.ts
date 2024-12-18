@@ -8,6 +8,7 @@ import { AuthMiddleware } from './auth/auth.middleware';
 import { AuthModule } from './auth/auth.module';
 import { ErrorLogService } from './common/services/error-log.service';
 
+import { LogosModule } from './logos/logos.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { QRCodeModule } from './qr-codes/qr-codes.module';
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     AuthModule,
     QRCodeModule,
+    LogosModule,
     JwtModule.register({
       secret: 'yourSecretKey', // Replace with your secret key
       signOptions: { expiresIn: '60s' },

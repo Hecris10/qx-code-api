@@ -14,29 +14,34 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   name        String
-  email       String   @unique
+  email       String      @unique
   password    String
   dateOfBirth DateTime
-  phoneNumber String   @unique
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  phoneNumber String      @unique
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   Auth        Auth[]
   QRCodes     QRCode[]
+  LogoImages  LogoImage[]
 }
 
 model QRCode {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
+  name      String
   type      String
   content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  text      String? // Optional for text
   ssid      String? // Optional for WiFi
   password  String? // Optional for WiFi
   link      String? // Optional for links
+  logoId    Int? // Optional for logo
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+  logo      LogoImage? @relation(fields: [logoId], references: [id])
 }
 
 model Auth {
@@ -56,4 +61,15 @@ model ErrorLog {
   timestamp  DateTime @default(now())
   path       String?
   method     String?
+}
+
+model LogoImage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  QRCode    QRCode[]
 }

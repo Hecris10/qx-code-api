@@ -14,6 +14,7 @@ export class AuthMiddleware implements NestMiddleware {
     const { originalUrl } = req;
     if (
       originalUrl.includes('/auth/login') ||
+      originalUrl.includes('/auth/logout') ||
       originalUrl.includes('/user/signup') ||
       originalUrl.includes('/status')
     ) {
