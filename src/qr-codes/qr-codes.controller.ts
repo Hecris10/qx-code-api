@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -12,6 +13,7 @@ import {
 
 import { CustomRequest } from '../interfaces/custom-request.interface';
 import { CreateQRCodeDto } from './dto/create-qr-code.dto';
+import { LogoQRCodeDto } from './dto/logo-qr-code.dto';
 import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
 import { QRCodeService } from './qr-codes.service';
 
@@ -30,9 +32,18 @@ export class QRCodeController {
     return this.qrCodeService.update(+id, updateQRCodeDto);
   }
 
+  @Patch(':id')
+  updatePartial(
+    @Param('id') id: string,
+    @Body() updateQRCodeDto: UpdateQRCodeDto,
+  ) {
+    return this.qrCodeService.update(+id, updateQRCodeDto);
+  }
+
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.qrCodeService.remove(+id);
+  remove(@Req() req: CustomRequest, @Param('id') id: string) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.remove(userId, +id);
   }
 
   @Get()
@@ -50,5 +61,22 @@ export class QRCodeController {
       startDate,
       endDate,
     });
+  }
+
+  @Get(':id')
+  findOne(@Req() req: CustomRequest, @Param('id') id: string) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.findOne(+userId, +id);
+  }
+
+  @Patch(':id/logo')
+  async addLogo(
+    @Req() req: CustomRequest,
+    @Param('id') id: string,
+    @Body() body: LogoQRCodeDto,
+  ) {
+    const userId = Number(req.user.id);
+    const qrCodeId = Number(id);
+    return this.qrCodeService.addLogo(userId, qrCodeId, body.logoId);
   }
 }

@@ -1,16 +1,63 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQRCodeDto } from './dto/create-qr-code.dto';
 import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
 
+const includeQrCodeLogo = {
+  logo: {
+    select: {
+      id: true,
+      url: true,
+    },
+  },
+};
 @Injectable()
 export class QRCodeService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createQRCodeDto: CreateQRCodeDto, userId: number) {
+    const type = createQRCodeDto.type;
+
+    switch (type) {
+      case 'text':
+        if (!createQRCodeDto.text) {
+          throw new BadRequestException('Text is required');
+        }
+        break;
+      case 'wifi':
+        if (!createQRCodeDto.ssid) {
+          throw new BadRequestException('SSID is required');
+        }
+        if (!createQRCodeDto.password) {
+          throw new BadRequestException('Password is required');
+        }
+        break;
+      case 'url':
+        if (!createQRCodeDto.link) {
+          throw new BadRequestException('Link is required');
+        }
+        break;
+      default:
+        if (!createQRCodeDto.content) {
+          throw new BadRequestException('Content is required');
+        }
+        break;
+    }
+
     return this.prisma.qRCode.create({
       data: {
-        ...createQRCodeDto,
+        name: createQRCodeDto.name,
+        type: createQRCodeDto.type || '',
+        content: createQRCodeDto.content || '',
+        link: createQRCodeDto.link || '',
+        ssid: createQRCodeDto.ssid || '',
+        password: createQRCodeDto.password || '',
+        text: createQRCodeDto.text || '',
         userId,
       },
     });
@@ -23,9 +70,19 @@ export class QRCodeService {
     });
   }
 
-  async remove(id: number) {
-    return this.prisma.qRCode.delete({
+  async updatePartial(id: number, updateQRCodeDto: UpdateQRCodeDto) {
+    return this.prisma.qRCode.update({
       where: { id },
+      data: updateQRCodeDto,
+    });
+  }
+
+  async remove(userId: number, id: number) {
+    return this.prisma.qRCode.delete({
+      where: {
+        id,
+        userId,
+      },
     });
   }
 
@@ -42,6 +99,7 @@ export class QRCodeService {
       const [total, data] = await Promise.all([
         this.prisma.qRCode.count({ where }),
         this.prisma.qRCode.findMany({
+          include: includeQrCodeLogo,
           where,
           skip: (page - 1) * limit,
           take: parseInt(limit, 10), // Ensure 'take' is an integer
@@ -59,5 +117,43 @@ export class QRCodeService {
       console.error('Error fetching QR codes:', error);
       throw new InternalServerErrorException('Failed to fetch QR codes');
     }
+  }
+
+  async findOne(userId: number, id: number) {
+    const qrCode = await this.prisma.qRCode.findFirst({
+      include: includeQrCodeLogo,
+      where: {
+        id,
+        userId,
+      },
+    });
+    if (!qrCode) throw new NotFoundException('QR code not found');
+
+    return qrCode;
+  }
+
+  async addLogo(userId: number, qrCodeId: number, logoId: number) {
+    const qrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id: qrCodeId,
+        userId,
+      },
+    });
+    if (!qrCode) throw new NotFoundException('QR code not found');
+
+    return this.prisma.qRCode.update({
+      where: { id: qrCodeId },
+      include: {
+        logo: {
+          select: {
+            id: true,
+            url: true,
+          },
+        },
+      },
+      data: {
+        logoId,
+      },
+    });
   }
 }
