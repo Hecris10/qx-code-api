@@ -79,4 +79,20 @@ export class QRCodeController {
     const qrCodeId = Number(id);
     return this.qrCodeService.addLogo(userId, qrCodeId, body.logoId);
   }
+
+  @Delete(':id/logo/:logoId')
+  async removeLogo(
+    @Req() req: CustomRequest,
+    @Param('id') id: string,
+    @Param('logoId') logoId: string,
+  ) {
+    const userId = Number(req.user.id);
+    const qrCodeId = Number(id);
+    const logoIdToNumber = Number(logoId);
+    return this.qrCodeService.removeLogo({
+      userId,
+      qrCodeId,
+      logoId: logoIdToNumber,
+    });
+  }
 }
