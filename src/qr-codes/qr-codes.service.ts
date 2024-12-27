@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQRCodeDto } from './dto/create-qr-code.dto';
+import { UpdatePartialQRCodeDto } from './dto/update-partial-qr-code.dtop';
 import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
 
 const includeQrCodeLogo = {
@@ -70,10 +71,10 @@ export class QRCodeService {
     });
   }
 
-  async updatePartial(id: number, updateQRCodeDto: UpdateQRCodeDto) {
+  async updatePartial(id: number, updateQRCodeDto: UpdatePartialQRCodeDto) {
     return this.prisma.qRCode.update({
       where: { id },
-      data: updateQRCodeDto,
+      data: { ...updateQRCodeDto, logoId: updateQRCodeDto.logoId || undefined },
     });
   }
 
@@ -153,6 +154,35 @@ export class QRCodeService {
       },
       data: {
         logoId,
+      },
+    });
+  }
+
+  async removeLogo({
+    userId,
+    qrCodeId,
+    logoId,
+  }: {
+    userId: number;
+    qrCodeId: number;
+    logoId: number;
+  }) {
+    const qrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id: qrCodeId,
+        userId,
+        logoId,
+      },
+    });
+    if (!qrCode) throw new NotFoundException('QR code not found');
+
+    return this.prisma.qRCode.update({
+      where: { id: qrCodeId },
+      data: {
+        logoId: null,
+        logoBackgroundColor: null,
+        logoBorderRadius: null,
+        logoPadding: null,
       },
     });
   }

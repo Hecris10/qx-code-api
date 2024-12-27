@@ -1,9 +1,5 @@
-export class UpdateQRCodeDto {
-  type?: string;
-  content?: string;
-  ssid?: string;
-  password?: string;
-  link?: string;
+export class UpdatePartialQRCodeDto {
+  name: string;
   logoId?: number;
   backgroundColor?: string;
   padding?: number;
