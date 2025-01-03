@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    volumes:
+      - ./prisma/db:/usr/src/app/prisma/db
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  sqlite-db:
