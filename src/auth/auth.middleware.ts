@@ -16,7 +16,7 @@ export class AuthMiddleware implements NestMiddleware {
       originalUrl.includes('/auth/login') ||
       originalUrl.includes('/auth/logout') ||
       originalUrl.includes('/user/signup') ||
-      originalUrl.includes('/status')
+      originalUrl.includes('/health')
     ) {
       return next();
     }
