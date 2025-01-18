@@ -11,7 +11,7 @@ import {
   Req,
 } from '@nestjs/common';
 
-import { CustomRequest } from '../interfaces/custom-request.interface';
+import { CustomRequest } from 'src/interfaces/custom-request.interface';
 import { CreateQRCodeDto } from './dto/create-qr-code.dto';
 import { LogoQRCodeDto } from './dto/logo-qr-code.dto';
 import { UpdateQRCodeDto } from './dto/update-qr-code.dto';

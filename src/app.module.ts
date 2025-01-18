@@ -4,15 +4,16 @@ import { JwtModule } from '@nestjs/jwt';
 import * as cookieParser from 'cookie-parser';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthMiddleware } from './auth/auth.middleware';
-import { AuthModule } from './auth/auth.module';
+
 import { ErrorLogService } from './common/services/error-log.service';
 
-import { LogosModule } from './logos/logos.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { PrismaService } from './prisma/prisma.service';
-import { QRCodeModule } from './qr-codes/qr-codes.module';
-import { UserModule } from './user/user.module';
+import { AuthMiddleware } from './modules/auth/auth.middleware';
+import { AuthModule } from './modules/auth/auth.module';
+import { LogosModule } from './modules/logos/logos.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { PrismaService } from './modules/prisma/prisma.service';
+import { QRCodeModule } from './modules/qr-codes/qr-codes.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [

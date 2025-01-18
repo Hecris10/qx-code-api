@@ -7,8 +7,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { LoginUserDto } from 'src/user/dto/login-user.dto';
+import { PrismaService } from 'src/modules/prisma/prisma.service';
+import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
 import { validateEmail } from 'src/utilts/validation';
 import { UserAuth } from './dto/auth.dto';
 
