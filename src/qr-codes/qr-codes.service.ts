@@ -60,6 +60,14 @@ export class QRCodeService {
         password: createQRCodeDto.password || '',
         text: createQRCodeDto.text || '',
         userId,
+        backgroundColor: '#ffffff',
+        cornersColor: '##000000',
+        nodesColor: '#000000',
+        logoBackgroundColor: '#00000000',
+        dotsType: 'square',
+        cornerType: 'square',
+        logoBorderRadius: 0,
+        padding: 4,
       },
     });
   }

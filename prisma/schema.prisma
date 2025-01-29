@@ -27,6 +27,7 @@ model User {
   LogoImages  LogoImage[]
 }
 
+
 model QRCode {
   id                  Int        @id @default(autoincrement())
   name                String
@@ -42,12 +43,15 @@ model QRCode {
   userId              Int
   user                User       @relation(fields: [userId], references: [id])
   logo                LogoImage? @relation(fields: [logoId], references: [id])
-  backgroundColor     String? // Optional for background color
+  backgroundColor     String? @default("#ffffff") // Optional for background color
   padding             Float? // Optional for padding
-  logoBackgroundColor String? // Optional for logo background color
+  logoBackgroundColor String? @default("#00000000") // Optional for logo background color
   logoPadding         Float? // Optional for logo padding
   logoBorderRadius    Float? // Optional for logo border radius
-  qrCodeBorderRadius  Float? // Optional for QR code border radius
+  cornerType         String? @default("square") // Optional for corner type
+  dotsType     String?   @default("square") // Optional for dot type
+  cornersColor       String? @default("#000000") // Optional for corners color
+  nodesColor         String? @default("#000000") // Optional for nodes color
 }
 
 model Auth {
