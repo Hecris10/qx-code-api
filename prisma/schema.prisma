@@ -52,6 +52,7 @@ model QRCode {
   dotsType     String?   @default("square") // Optional for dot type
   cornersColor       String? @default("#000000") // Optional for corners color
   nodesColor         String? @default("#000000") // Optional for nodes color
+  qrCodeControllers  QrCodeController[]
 }
 
 model Auth {
@@ -82,4 +83,22 @@ model LogoImage {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   QRCode    QRCode[]
+}
+
+
+model QrCodeController {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  qrCodeId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  qrCode    QRCode   @relation(fields: [qrCodeId], references: [id])
+  ip        String
+  userAgent String
+  ip2      String
+  locale    String
+  referrer  String
+  screenResolution String
+  timestamp DateTime
+  pageUrl   String
 }

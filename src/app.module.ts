@@ -12,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { LogosModule } from './modules/logos/logos.module';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { PrismaService } from './modules/prisma/prisma.service';
+import { QRCodeControllerModule } from './modules/qr-code-controller/qr-code-controller.module';
 import { QRCodeModule } from './modules/qr-codes/qr-codes.module';
 import { UserModule } from './modules/user/user.module';
 
@@ -25,6 +26,7 @@ import { UserModule } from './modules/user/user.module';
     AuthModule,
     QRCodeModule,
     LogosModule,
+    QRCodeControllerModule,
     JwtModule.register({
       secret: 'yourSecretKey', // Replace with your secret key
       signOptions: { expiresIn: '60s' },
