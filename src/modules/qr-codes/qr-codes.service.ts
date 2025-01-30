@@ -5,9 +5,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateQRCodeDto } from './dto/create-qr-code.dto';
-import { UpdatePartialQRCodeDto } from './dto/update-partial-qr-code.dtop';
-import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
+import {
+  CreateQRCodeDto,
+  UpdatePartialQRCodeDto,
+  UpdateQRCodeDto,
+} from './dto/qr-codes.dto';
 
 const includeQrCodeLogo = {
   logo: {

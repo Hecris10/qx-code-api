@@ -10,11 +10,12 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-
 import { CustomRequest } from 'src/interfaces/custom-request.interface';
-import { CreateQRCodeDto } from './dto/create-qr-code.dto';
-import { LogoQRCodeDto } from './dto/logo-qr-code.dto';
-import { UpdateQRCodeDto } from './dto/update-qr-code.dto';
+import {
+  CreateQRCodeDto,
+  LogoQRCodeDto,
+  UpdateQRCodeDto,
+} from './dto/qr-codes.dto';
 import { QRCodeService } from './qr-codes.service';
 
 @Controller('qr-codes')

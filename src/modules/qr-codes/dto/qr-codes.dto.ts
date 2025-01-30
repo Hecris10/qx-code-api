@@ -1,3 +1,34 @@
+export class CreateQRCodeDto {
+  name: string;
+  text?: string;
+  type: string;
+  content: string;
+  ssid?: string;
+  password?: string;
+  link?: string;
+  isControlled?: boolean;
+}
+
+export class UpdateQRCodeDto {
+  type?: string;
+  content?: string;
+  ssid?: string;
+  password?: string;
+  link?: string;
+  logoId?: number;
+  backgroundColor?: string;
+  padding?: number;
+  logoBackgroundColor?: string;
+  logoBorderRadius?: number;
+  logoPadding?: number;
+  qrCodeBorderRadius?: number;
+  isControlled?: boolean;
+}
+
+export class LogoQRCodeDto {
+  logoId: number;
+}
+
 export class UpdatePartialQRCodeDto {
   name: string;
   logoId?: number;
@@ -10,6 +41,7 @@ export class UpdatePartialQRCodeDto {
   dotsType: QrCodeDotType;
   cornersColor: string;
   nodesColor: string;
+  isControlled?: boolean;
 }
 
 export type QrCodeDotType =
