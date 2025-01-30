@@ -37,7 +37,7 @@ COPY .env .env
 RUN ls -la ./prisma
 
 # Add step to run Prisma migrations
-RUN pnpm migrate:deploy
+RUN pnpm prisma:migrate:deploy
 
 # Expose application port
 EXPOSE 3001
