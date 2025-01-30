@@ -24,12 +24,15 @@ CREATE TABLE "QRCode" (
     "link" TEXT,
     "logoId" INTEGER,
     "userId" INTEGER NOT NULL,
-    "backgroundColor" TEXT,
+    "backgroundColor" TEXT DEFAULT '#ffffff',
     "padding" REAL,
-    "logoBackgroundColor" TEXT,
+    "logoBackgroundColor" TEXT DEFAULT '#00000000',
     "logoPadding" REAL,
     "logoBorderRadius" REAL,
-    "qrCodeBorderRadius" REAL,
+    "cornerType" TEXT DEFAULT 'square',
+    "dotsType" TEXT DEFAULT 'square',
+    "cornersColor" TEXT DEFAULT '#000000',
+    "nodesColor" TEXT DEFAULT '#000000',
     CONSTRAINT "QRCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "QRCode_logoId_fkey" FOREIGN KEY ("logoId") REFERENCES "LogoImage" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -64,6 +67,24 @@ CREATE TABLE "LogoImage" (
     "updatedAt" DATETIME NOT NULL,
     "userId" INTEGER NOT NULL,
     CONSTRAINT "LogoImage_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "QrCodeController" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "userId" INTEGER NOT NULL,
+    "qrCodeId" INTEGER NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "ip" TEXT NOT NULL,
+    "userAgent" TEXT NOT NULL,
+    "ip2" TEXT NOT NULL,
+    "locale" TEXT NOT NULL,
+    "referrer" TEXT NOT NULL,
+    "screenResolution" TEXT NOT NULL,
+    "timestamp" DATETIME NOT NULL,
+    "pageUrl" TEXT NOT NULL,
+    CONSTRAINT "QrCodeController_qrCodeId_fkey" FOREIGN KEY ("qrCodeId") REFERENCES "QRCode" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
