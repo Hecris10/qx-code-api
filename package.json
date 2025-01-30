@@ -9,6 +9,9 @@
   "scripts": {
     "build": "nest build",
     "prisma": "prisma generate --schema=./prisma/schema.prisma",
+    "prisma:migration:generate": "prisma migrate dev --schema=./prisma/schema.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema=./prisma/schema.prisma",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "dev": "nest start --watch",
@@ -19,9 +22,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migration:generate": "prisma migrate dev --schema=./prisma/schema.prisma",
-    "migrate:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@libsql/client": "^0.8.1",
