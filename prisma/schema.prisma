@@ -52,6 +52,7 @@ model QRCode {
   dotsType     String?   @default("square") // Optional for dot type
   cornersColor       String? @default("#000000") // Optional for corners color
   nodesColor         String? @default("#000000") // Optional for nodes color
+  isControlled       Boolean? @default(false) // Optional for controlled
   qrCodeControllers  QrCodeController[]
 }
 
