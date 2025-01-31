@@ -33,6 +33,7 @@ CREATE TABLE "QRCode" (
     "dotsType" TEXT DEFAULT 'square',
     "cornersColor" TEXT DEFAULT '#000000',
     "nodesColor" TEXT DEFAULT '#000000',
+    "isControlled" BOOLEAN DEFAULT false,
     CONSTRAINT "QRCode_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT "QRCode_logoId_fkey" FOREIGN KEY ("logoId") REFERENCES "LogoImage" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
@@ -72,7 +73,6 @@ CREATE TABLE "LogoImage" (
 -- CreateTable
 CREATE TABLE "QrCodeController" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    "userId" INTEGER NOT NULL,
     "qrCodeId" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,

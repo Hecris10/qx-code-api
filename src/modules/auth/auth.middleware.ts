@@ -16,7 +16,8 @@ export class AuthMiddleware implements NestMiddleware {
       originalUrl.includes('/auth/login') ||
       originalUrl.includes('/auth/logout') ||
       originalUrl.includes('/user/signup') ||
-      originalUrl.includes('/health')
+      originalUrl.includes('/health') ||
+      (originalUrl.includes('/qr-code-controller') && req.method === 'POST')
     ) {
       return next();
     }

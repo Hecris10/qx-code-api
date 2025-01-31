@@ -13,19 +13,27 @@ import {
 export class QrCodeControllerService {
   constructor(private prisma: PrismaService) {}
 
-  async create(
-    createQrCodeControllerDto: CreateQrCodeControllerDto,
-    userId: number,
-  ) {
+  async create(createQrCodeControllerDto: CreateQrCodeControllerDto) {
+    // Check if the qrCodeId exists in the QRCode table
+    const qrCodeExists = await this.prisma.qRCode.findUnique({
+      where: { id: createQrCodeControllerDto.qrCodeId },
+    });
+
+    if (!qrCodeExists) {
+      throw new NotFoundException(
+        `QR code with id ${createQrCodeControllerDto.qrCodeId} not found`,
+      );
+    }
+
     try {
       const newQrCodeController = await this.prisma.qrCodeController.create({
         data: {
           ...createQrCodeControllerDto,
-          userId,
         },
+        include: { qrCode: true },
       });
 
-      return newQrCodeController;
+      return { link: newQrCodeController.qrCode.link };
     } catch (error: any) {
       throw new InternalServerErrorException(
         `Failed to create QR code controller: ${error.message}`,
@@ -35,7 +43,7 @@ export class QrCodeControllerService {
 
   async findOne(userId: number, id: number) {
     const qrCodeController = await this.prisma.qrCodeController.findFirst({
-      where: { id, userId },
+      where: { id, qrCode: { userId } },
     });
 
     if (!qrCodeController) {
@@ -47,7 +55,7 @@ export class QrCodeControllerService {
 
   async findAll(userId: number) {
     return await this.prisma.qrCodeController.findMany({
-      where: { userId },
+      where: { qrCode: { userId } },
     });
   }
 
@@ -57,7 +65,7 @@ export class QrCodeControllerService {
     updateQrCodeControllerDto: UpdateQrCodeControllerDto,
   ) {
     const qrCodeController = await this.prisma.qrCodeController.findFirst({
-      where: { id, userId },
+      where: { id, qrCode: { userId } },
     });
 
     if (!qrCodeController) {
@@ -78,7 +86,7 @@ export class QrCodeControllerService {
 
   async remove(userId: number, id: number) {
     const qrCodeController = await this.prisma.qrCodeController.findFirst({
-      where: { id, userId },
+      where: { id, qrCode: { userId } },
     });
 
     if (!qrCodeController) {
