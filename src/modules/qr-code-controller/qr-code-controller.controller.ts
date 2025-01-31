@@ -22,12 +22,8 @@ export class QrCodeControllerController {
   ) {}
 
   @Post()
-  async create(
-    @Body() createQrControllerDto: CreateQrCodeControllerDto,
-    @Req() req: CustomRequest,
-  ) {
-    const userId = Number(req.user.id);
-    return this.qrCodeControllerService.create(createQrControllerDto, userId);
+  async create(@Body() createQrControllerDto: CreateQrCodeControllerDto) {
+    return this.qrCodeControllerService.create(createQrControllerDto);
   }
 
   @Patch(':id')
