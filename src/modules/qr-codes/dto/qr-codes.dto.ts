@@ -5,8 +5,10 @@ export class CreateQRCodeDto {
   content: string;
   ssid?: string;
   password?: string;
+  security?: string;
   link?: string;
   isControlled?: boolean;
+  expirationDate?: Date;
 }
 
 export class UpdateQRCodeDto {
@@ -14,6 +16,7 @@ export class UpdateQRCodeDto {
   content?: string;
   ssid?: string;
   password?: string;
+  security?: string;
   link?: string;
   logoId?: number;
   backgroundColor?: string;
@@ -23,6 +26,7 @@ export class UpdateQRCodeDto {
   logoPadding?: number;
   qrCodeBorderRadius?: number;
   isControlled?: boolean;
+  expirationDate?: Date;
 }
 
 export class LogoQRCodeDto {
@@ -42,6 +46,7 @@ export class UpdatePartialQRCodeDto {
   cornersColor: string;
   nodesColor: string;
   isControlled?: boolean;
+  expirationDate?: Date;
 }
 
 export type QrCodeDotType =
