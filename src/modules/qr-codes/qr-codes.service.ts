@@ -33,7 +33,7 @@ export class QRCodeService {
         }
         break;
       case 'wifi':
-        if (!createQRCodeDto.ssid) {
+        if (!createQRCodeDto.security) {
           throw new BadRequestException('SSID is required');
         }
         if (!createQRCodeDto.password) {

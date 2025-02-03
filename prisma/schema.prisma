@@ -38,6 +38,7 @@ model QRCode {
   text                String? // Optional for text
   ssid                String? // Optional for WiFi
   password            String? // Optional for WiFi
+  security            String? // Optional for WiFi
   link                String? // Optional for links
   logoId              Int? // Optional for logo
   userId              Int
@@ -53,6 +54,7 @@ model QRCode {
   cornersColor       String? @default("#000000") // Optional for corners color
   nodesColor         String? @default("#000000") // Optional for nodes color
   isControlled       Boolean? @default(false) // Optional for controlled
+  expirationDate     DateTime? // Optional for expiration date
   qrCodeControllers  QrCodeController[]
 }
 
