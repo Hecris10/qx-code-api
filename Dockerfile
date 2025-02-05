@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 
 # Copy package.json and pnpm-lock.yaml and install dependencies
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm@7.0.0 && pnpm install
+RUN npm install -g pnpm@latest && pnpm install
 
 # Copy application files and build
 COPY . .
@@ -18,7 +18,7 @@ FROM node:20-alpine AS production
 WORKDIR /usr/src/app
 
 # Install pnpm and sqlite
-RUN npm install -g pnpm@7.0.0
+RUN npm install -g pnpm@latest
 RUN apk add --no-cache sqlite
 
 # Copy build artifacts and dependencies from the builder stage
