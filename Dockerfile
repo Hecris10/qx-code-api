@@ -3,9 +3,9 @@ FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
 
-# Copy package.json and install dependencies
+# Copy package.json and pnpm-lock.yaml and install dependencies
 COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm install --frozen-lockfile
+RUN npm install -g pnpm && pnpm install
 
 # Copy application files and build
 COPY . .
@@ -37,7 +37,7 @@ COPY .env .env
 RUN ls -la ./prisma
 
 # Add step to run Prisma migrations
-RUN pnpm prisma:migrate:deploy
+RUN pnpm prisma migrate deploy
 
 # Expose application port
 EXPOSE 3001
