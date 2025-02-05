@@ -40,7 +40,9 @@ RUN ls -la ./prisma
 RUN pnpm prisma migrate deploy
 
 # Expose application port
-EXPOSE 3001
+ARG PORT=3001
+ENV PORT=$PORT
+EXPOSE $PORT
 
 # Start the application with environment variables
 CMD ["sh", "-c", "node -r dotenv/config dist/main.js"]
