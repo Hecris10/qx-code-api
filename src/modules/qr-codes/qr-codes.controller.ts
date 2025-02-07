@@ -51,9 +51,11 @@ export class QRCodeController {
   findAll(
     @Req() req: CustomRequest,
     @Query('page') page: number,
-    @Query('limit') limit: number,
+    @Query('limit') limit: string,
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
+    @Query('isControlled') isControlled: string,
+    @Query('type') type: string,
   ) {
     const userId = Number(req.user.id);
     return this.qrCodeService.findAll(userId, {
@@ -61,6 +63,8 @@ export class QRCodeController {
       limit,
       startDate,
       endDate,
+      isControlled: isControlled === 'true',
+      type,
     });
   }
 

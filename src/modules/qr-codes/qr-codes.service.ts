@@ -97,29 +97,47 @@ export class QRCodeService {
     });
   }
 
-  async findAll(userId: number, { page, limit, startDate, endDate }) {
+  async findAll(
+    userId: number,
+    {
+      page,
+      limit,
+      startDate,
+      endDate,
+      isControlled,
+      type,
+    }: {
+      page: number;
+      limit: string;
+      startDate?: string;
+      endDate?: string;
+      isControlled?: boolean;
+      type?: string;
+    },
+  ) {
     try {
       const where = {
         userId,
+        type: type || undefined,
+        isControlled: isControlled !== undefined ? isControlled : undefined,
         createdAt: {
           gte: startDate ? new Date(startDate) : undefined,
           lte: endDate ? new Date(endDate) : undefined,
         },
       };
 
-      const [total, data] = await Promise.all([
-        this.prisma.qRCode.count({ where }),
-        this.prisma.qRCode.findMany({
-          include: includeQrCodeLogo,
-          where,
-          skip: (page - 1) * limit,
-          take: parseInt(limit, 10), // Ensure 'take' is an integer
-          orderBy: { createdAt: 'desc' },
-        }),
-      ]);
+      console.log({ where });
+
+      const data = await this.prisma.qRCode.findMany({
+        include: includeQrCodeLogo,
+        where,
+        skip: (page - 1) * parseInt(limit, 10),
+        take: parseInt(limit), // Ensure 'take' is an integer
+        orderBy: { createdAt: 'desc' },
+      });
 
       return {
-        total,
+        total: data.length,
         data,
         page,
         limit,
