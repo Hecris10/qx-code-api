@@ -125,9 +125,6 @@ export class QRCodeService {
           lte: endDate ? new Date(endDate) : undefined,
         },
       };
-
-      console.log({ where });
-
       const data = await this.prisma.qRCode.findMany({
         include: includeQrCodeLogo,
         where,
@@ -213,5 +210,14 @@ export class QRCodeService {
         logoPadding: null,
       },
     });
+  }
+
+  async count({ userId }: { userId: number }) {
+    const count = await this.prisma.qRCode.count({
+      where: {
+        userId,
+      },
+    });
+    return count;
   }
 }

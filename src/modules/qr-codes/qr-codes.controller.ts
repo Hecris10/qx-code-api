@@ -22,6 +22,12 @@ import { QRCodeService } from './qr-codes.service';
 export class QRCodeController {
   constructor(private readonly qrCodeService: QRCodeService) {}
 
+  @Get('count')
+  countQrCodes(@Req() req: CustomRequest) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.count({ userId });
+  }
+
   @Post()
   create(@Body() createQRCodeDto: CreateQRCodeDto, @Req() req: CustomRequest) {
     const userId = Number(req.user.id);
