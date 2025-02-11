@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -29,8 +30,21 @@ export class QRCodeController {
   }
 
   @Post()
-  create(@Body() createQRCodeDto: CreateQRCodeDto, @Req() req: CustomRequest) {
+  async create(
+    @Body() createQRCodeDto: CreateQRCodeDto,
+    @Req() req: CustomRequest,
+  ) {
     const userId = Number(req.user.id);
+    //check if the user already has the maximum number of qr codes 15
+
+    const userQrCodes = await this.qrCodeService.count({ userId });
+
+    if (userQrCodes >= 15) {
+      throw new BadRequestException(
+        'You have reached the maximum number of QR codes',
+      );
+    }
+
     return this.qrCodeService.create(createQRCodeDto, userId);
   }
 
