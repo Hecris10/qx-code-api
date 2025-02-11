@@ -37,6 +37,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       })
       .catch((err) => console.error('Error logging failed:', err));
 
+    console.error(exception);
+
     response.status(status).json({
       statusCode: status,
       timestamp: new Date().toISOString(),
