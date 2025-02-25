@@ -16,11 +16,5 @@ services:
       - PORT=${PORT:-3001}
     restart: always
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - '8080:8080'
-
 volumes:
   sqlite-db:
