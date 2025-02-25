@@ -212,12 +212,24 @@ export class QRCodeService {
     });
   }
 
-  async count({ userId }: { userId: number }) {
+  async countControlled({ userId }: { userId: number }) {
     const count = await this.prisma.qRCode.count({
       where: {
         userId,
+        isControlled: true,
       },
     });
     return count;
+  }
+
+  async getQrCodeName(userId: number, id: number) {
+    const qrCode = await this.prisma.qRCode.findFirst({
+      where: {
+        id,
+        userId,
+      },
+    });
+    if (!qrCode) throw new NotFoundException('QR code not found');
+    return qrCode.name;
   }
 }
