@@ -26,7 +26,7 @@ export class QRCodeController {
   @Get('count')
   countQrCodes(@Req() req: CustomRequest) {
     const userId = Number(req.user.id);
-    return this.qrCodeService.count({ userId });
+    return this.qrCodeService.countControlled({ userId });
   }
 
   @Post()
@@ -37,7 +37,7 @@ export class QRCodeController {
     const userId = Number(req.user.id);
     //check if the user already has the maximum number of qr codes 15
 
-    const userQrCodes = await this.qrCodeService.count({ userId });
+    const userQrCodes = await this.qrCodeService.countControlled({ userId });
 
     if (userQrCodes >= 15) {
       throw new BadRequestException(
@@ -88,6 +88,12 @@ export class QRCodeController {
     });
   }
 
+  @Get(':id/name')
+  getQrCodeName(@Req() req: CustomRequest, @Param('id') id: string) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.getQrCodeName(userId, +id);
+  }
+
   @Get(':id')
   findOne(@Req() req: CustomRequest, @Param('id') id: string) {
     const userId = Number(req.user.id);
@@ -120,4 +126,6 @@ export class QRCodeController {
       logoId: logoIdToNumber,
     });
   }
+
+
 }
