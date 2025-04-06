@@ -6,6 +6,7 @@ WORKDIR /usr/src/app
 # Install Bun
 RUN apk add --no-cache curl bash && \
     curl -fsSL https://bun.sh/install | bash && \
+    echo 'export PATH="/root/.bun/bin:$PATH"' >> /etc/profile && \
     export PATH="/root/.bun/bin:$PATH"
 
 # Copy package.json and optionally bun.lockb if it exists
@@ -30,7 +31,11 @@ WORKDIR /usr/src/app
 # Install Bun and sqlite
 RUN apk add --no-cache curl bash sqlite && \
     curl -fsSL https://bun.sh/install | bash && \
+    echo 'export PATH="/root/.bun/bin:$PATH"' >> /etc/profile && \
     export PATH="/root/.bun/bin:$PATH"
+
+# Ensure Bun is available in subsequent layers
+ENV PATH="/root/.bun/bin:$PATH"
 
 # Copy build artifacts and dependencies from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
