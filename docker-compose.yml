@@ -1,13 +1,11 @@
-version: '3.8'
-
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
+      target: release
     volumes:
-      - ./prisma/db:/usr/src/app/prisma/db
+      - ./prisma/db:/usr/src/app/prisma/db    # Persist SQLite database file only
     ports:
       - '${PORT:-3001}:${PORT:-3001}'
     env_file:
@@ -15,6 +13,3 @@ services:
     environment:
       - PORT=${PORT:-3001}
     restart: always
-
-volumes:
-  sqlite-db:

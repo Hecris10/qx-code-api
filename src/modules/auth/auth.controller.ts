@@ -10,7 +10,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
-import { LoginUserDto } from 'src/modules/user/dto/login-user.dto';
+import { LoginUserDto } from '../user/dto/login-user.dto';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
