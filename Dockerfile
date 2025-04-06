@@ -8,8 +8,13 @@ RUN apk add --no-cache curl bash && \
     curl -fsSL https://bun.sh/install | bash && \
     export PATH="/root/.bun/bin:$PATH"
 
-# Copy package.json and bun.lockb and install dependencies
-COPY package.json bun.lockb ./
+# Copy package.json and optionally bun.lockb if it exists
+COPY package.json ./
+# Copy bun.lockb if it exists
+# Copy bun.lockb if it exists
+RUN if [ -f bun.lockb ]; then cp bun.lockb ./; else echo "bun.lockb not found, skipping."; fi
+
+# Install dependencies
 RUN bun install
 
 # Copy application files and build
