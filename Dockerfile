@@ -1,64 +1,48 @@
-# Builder stage
-FROM node:20-alpine AS builder
-
+# Base image with Bun
+FROM oven/bun:1 AS base
 WORKDIR /usr/src/app
 
-# Install Bun
-RUN apk add --no-cache curl bash && \
-    curl -fsSL https://bun.sh/install | bash && \
-    echo 'export PATH="/root/.bun/bin:$PATH"' >> /etc/profile && \
-    export PATH="/root/.bun/bin:$PATH"
+# === Install dependencies ===
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lock /temp/dev/
+RUN cd /temp/dev && bun install --frozen-lockfile
 
-# Copy package.json and optionally bun.lockb if it exists
-COPY package.json ./
-# Copy bun.lockb if it exists
-# Copy bun.lockb if it exists
-RUN if [ -f bun.lockb ]; then cp bun.lockb ./; else echo "bun.lockb not found, skipping."; fi
+# Production-only deps
+RUN mkdir -p /temp/prod
+COPY package.json bun.lock /temp/prod/
+RUN cd /temp/prod && bun install --frozen-lockfile --production
 
-# Install dependencies
-RUN bun install
-
-# Copy application files and build
+# === Build app and generate Prisma client ===
+FROM base AS prerelease
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
+
+# Generate Prisma Client
 RUN bun prisma generate --schema=./prisma/schema.prisma
-RUN bun build
 
-# Production stage
-FROM node:20-alpine AS production
+# Optional test step
+# RUN bun test
 
+# Build NestJS app
+RUN bun run build
+
+# === Final image ===
+FROM base AS release
 WORKDIR /usr/src/app
 
-# Install Bun and sqlite
-RUN apk add --no-cache curl bash sqlite && \
-    curl -fsSL https://bun.sh/install | bash && \
-    echo 'export PATH="/root/.bun/bin:$PATH"' >> /etc/profile && \
-    export PATH="/root/.bun/bin:$PATH"
+# Copy only what's needed for production
+COPY --from=install /temp/prod/node_modules ./node_modules
+COPY --from=prerelease /usr/src/app/dist ./dist
+COPY --from=prerelease /usr/src/app/package.json .
+COPY --from=prerelease /usr/src/app/prisma ./prisma
+COPY --from=prerelease /usr/src/app/.env .env
 
-# Ensure Bun is available in subsequent layers
-ENV PATH="/root/.bun/bin:$PATH"
-
-# Copy build artifacts and dependencies from the builder stage
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./package.json
-
-# Explicitly copy the prisma directory
-COPY --from=builder /usr/src/app/prisma/schema.prisma ./prisma/schema.prisma
-COPY --from=builder /usr/src/app/prisma/migrations ./prisma/migrations
-
-# Copy the .env file
-COPY .env .env
-
-# Log the current directory
-RUN ls -la ./prisma
-
-# Add step to run Prisma migrations
+# Run migrations on startup
 RUN bun prisma migrate deploy
 
-# Expose application port
-ARG PORT=3001
-ENV PORT=$PORT
-EXPOSE $PORT
+# Expose port (same as PORT in .env)
+EXPOSE 3001
 
-# Start the application with environment variables
-CMD ["sh", "-c", "node -r dotenv/config dist/main.js"]
+USER bun
+CMD ["bun", "dist/main.js"]
