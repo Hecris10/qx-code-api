@@ -88,6 +88,35 @@ export class QRCodeController {
     });
   }
 
+  @Get('stats')
+  qrCodeStats(@Req() req: CustomRequest) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.getQrCodeStats(userId);
+  }
+
+  @Get('scans-stats')
+  qrCodeScansStats(@Req() req: CustomRequest, @Query('filter') filter: string) {
+    if (!filter) {
+      throw new BadRequestException('Filter is required');
+    }
+    if (
+      filter !== '30_DAYS' &&
+      filter !== '7_DAYS' &&
+      filter !== '90_DAYS' &&
+      filter !== 'LAST_YEAR'
+    ) {
+      throw new BadRequestException('Invalid filter');
+    }
+    const userId = Number(req.user.id);
+    return this.qrCodeService.getQrCodesScans(userId, filter);
+  }
+
+  @Get('top-scanned')
+  getTopQrCodes(@Req() req: CustomRequest) {
+    const userId = Number(req.user.id);
+    return this.qrCodeService.getTopScannedQrCodes(userId);
+  }
+
   @Get(':id/name')
   getQrCodeName(@Req() req: CustomRequest, @Param('id') id: string) {
     const userId = Number(req.user.id);
@@ -126,6 +155,4 @@ export class QRCodeController {
       logoId: logoIdToNumber,
     });
   }
-
-
 }
