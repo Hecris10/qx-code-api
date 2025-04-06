@@ -4,7 +4,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { endOfWeek, startOfWeek, subMonths } from 'date-fns';
 import { PrismaService } from '../prisma/prisma.service';
+import { QrCodesScansFilter } from './dto/qr-codes-stats.dto';
 import {
   CreateQRCodeDto,
   UpdatePartialQRCodeDto,
@@ -231,5 +233,213 @@ export class QRCodeService {
     });
     if (!qrCode) throw new NotFoundException('QR code not found');
     return qrCode.name;
+  }
+
+  async getQrCodeStats(userId: number) {
+    const now = new Date();
+    const lastMonth = subMonths(now, 1);
+    const startOfThisWeek = startOfWeek(now);
+    const endOfThisWeek = endOfWeek(now);
+
+    // Total QR codes with difference from last month
+    const totalQrCodes = await this.prisma.qRCode.count({
+      where: { userId },
+    });
+
+    const totalQrCodesLastMonth = await this.prisma.qRCode.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: lastMonth,
+          lt: now,
+        },
+      },
+    });
+
+    const totalQrCodesDifference = totalQrCodes - totalQrCodesLastMonth;
+
+    // Total scans with percent more or less than last month
+    const totalScans = await this.prisma.qrCodeController.count({
+      where: {
+        qrCode: {
+          userId,
+        },
+      },
+    });
+
+    const totalScansLastMonth = await this.prisma.qrCodeController.count({
+      where: {
+        qrCode: {
+          userId,
+        },
+        createdAt: {
+          gte: lastMonth,
+          lt: now,
+        },
+      },
+    });
+
+    const totalScansDifferencePercent =
+      totalScansLastMonth > 0
+        ? ((totalScans - totalScansLastMonth) / totalScansLastMonth) * 100
+        : 0;
+
+    // Active QR codes with difference from last month in percent
+    const activeQrCodes = await this.prisma.qRCode.count({
+      where: {
+        userId,
+        isControlled: true,
+      },
+    });
+
+    const activeQrCodesLastMonth = await this.prisma.qRCode.count({
+      where: {
+        userId,
+        isControlled: true,
+        createdAt: {
+          gte: lastMonth,
+          lt: now,
+        },
+      },
+    });
+
+    const activeQrCodesDifferencePercent =
+      activeQrCodesLastMonth > 0
+        ? ((activeQrCodes - activeQrCodesLastMonth) / activeQrCodesLastMonth) *
+          100
+        : 0;
+
+    // Expiring this week with difference from last month in percent
+    const expiringThisWeek = await this.prisma.qRCode.count({
+      where: {
+        userId,
+        expirationDate: {
+          gte: startOfThisWeek,
+          lte: endOfThisWeek,
+        },
+      },
+    });
+
+    const expiringLastMonth = await this.prisma.qRCode.count({
+      where: {
+        userId,
+        expirationDate: {
+          gte: startOfThisWeek,
+          lte: endOfThisWeek,
+        },
+        createdAt: {
+          gte: lastMonth,
+          lt: now,
+        },
+      },
+    });
+
+    const expiringDifferencePercent =
+      expiringLastMonth > 0
+        ? ((expiringThisWeek - expiringLastMonth) / expiringLastMonth) * 100
+        : 0;
+
+    return {
+      totalQrCodes,
+      totalQrCodesDifference,
+      totalScans,
+      totalScansDifferencePercent,
+      activeQrCodes,
+      activeQrCodesDifferencePercent,
+      expiringThisWeek,
+      expiringDifferencePercent,
+    };
+  }
+
+  async getQrCodesScans(userId: number, filter: QrCodesScansFilter) {
+    const now = new Date();
+    const startDate = new Date();
+    let dateFormatter = (date: Date) =>
+      new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+      }).format(date);
+
+    switch (filter) {
+      case '30_DAYS':
+        startDate.setDate(now.getDate() - 30);
+        break;
+      case '7_DAYS':
+        startDate.setDate(now.getDate() - 7);
+        break;
+      case '90_DAYS':
+        startDate.setMonth(now.getMonth() - 3);
+        break;
+      case 'LAST_YEAR':
+        startDate.setFullYear(now.getFullYear() - 1);
+        dateFormatter = (date: Date) =>
+          new Intl.DateTimeFormat('en-US', { month: 'short' }).format(date);
+        break;
+      default:
+        throw new BadRequestException('Invalid filter');
+    }
+
+    // Fetch all relevant records
+    const scans = await this.prisma.qrCodeController.findMany({
+      where: {
+        qrCode: { userId },
+        createdAt: {
+          gte: startDate,
+          lte: now,
+        },
+      },
+      select: {
+        createdAt: true,
+      },
+    });
+
+    // Group and count the records manually
+    const groupedScans = scans.reduce((acc, scan) => {
+      const formattedDate = dateFormatter(scan.createdAt);
+      if (!acc[formattedDate]) {
+        acc[formattedDate] = 0;
+      }
+      acc[formattedDate] += 1; // Increment the count for the date
+      return acc;
+    }, {});
+
+    const formattedScans = Object.entries(groupedScans).map(
+      ([date, count]) => ({
+        date,
+        scans: count,
+      }),
+    );
+
+    return formattedScans;
+  }
+
+  async getTopScannedQrCodes(userId: number) {
+    // Fetch the top 20 most scanned active QR codes
+    const topQrCodes = await this.prisma.qRCode.findMany({
+      where: {
+        userId,
+        isControlled: true, // Only active QR codes
+      },
+      include: {
+        _count: {
+          select: {
+            qrCodeControllers: true, // Count of scans
+          },
+        },
+      },
+      orderBy: {
+        qrCodeControllers: {
+          _count: 'desc', // Order by scan count'
+        },
+      },
+      take: 20, // Limit to top 20
+    });
+
+    // Format the result
+    return topQrCodes.map((qrCode) => ({
+      id: qrCode.id,
+      name: qrCode.name,
+      scanCount: qrCode._count.qrCodeControllers,
+    }));
   }
 }

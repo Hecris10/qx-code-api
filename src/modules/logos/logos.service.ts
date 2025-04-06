@@ -40,7 +40,7 @@ export class LogosService {
   }
 
   async findAllByUser(userId: number) {
-    return this.prisma.logoImage.findMany({
+    return await this.prisma.logoImage.findMany({
       orderBy: {
         id: 'desc',
       },
